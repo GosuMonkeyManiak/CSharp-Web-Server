@@ -1,6 +1,8 @@
 ﻿namespace WebServer.Server.HTTP
 {
-    public class HeaderCollection
+    using System.Collections;
+
+    public class HeaderCollection : IEnumerable<Header>
     {
         private readonly Dictionary<string, Header> headers;
 
@@ -9,13 +11,19 @@
             this.headers = new Dictionary<string, Header>();
         }
 
+        public string this[string name]
+            => this.headers[name].Value;
+
         public int Count => this.headers.Count;
 
         public void Add(string name, string value)
-        {
-            var header = new Header(name, value);
+            => this.headers[name] = new Header(name, value);
 
-            this.headers.Add(name, header);
-        }
+        public bool Contains(string name)
+            => this.headers.ContainsKey(name);
+
+        public IEnumerator<Header> GetEnumerator() => this.headers.Values.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     }
 }
