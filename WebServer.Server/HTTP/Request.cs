@@ -10,6 +10,8 @@
 
         public HeaderCollection Headers { get; private set; }
 
+        public CookieCollection Cookies { get; private set; }
+
         public string Body { get; private set; }
 
         public IReadOnlyDictionary<string, string> Form { get; private set; }
@@ -27,6 +29,8 @@
 
             HeaderCollection headers = ParseHeaders(lines.Skip(1));
 
+            CookieCollection cookies = ParseCookies(headers);
+
             string[] bodyLines = lines.Skip(headers.Count + 2).ToArray();
 
             string body = string.Join(separator, bodyLines);
@@ -38,9 +42,34 @@
                 Method = method,
                 Url =  url,
                 Headers = headers,
+                Cookies = cookies,
                 Body = body,
                 Form = form
             };
+        }
+
+        private static CookieCollection ParseCookies(HeaderCollection headers)
+        {
+            var cookieCollection = new CookieCollection();
+
+            if (headers.Contains(Header.Cookie))
+            {
+                var cookieHeader = headers[Header.Cookie];
+
+                var allCookies = cookieHeader.Split(';');
+
+                foreach (var cookieText in allCookies)
+                {
+                    var cookieParts = cookieText.Split('=', 2);
+
+                    var cookieName = cookieParts[0].Trim();
+                    var cookieValue = cookieParts[1].Trim();
+
+                    cookieCollection.Add(cookieName, cookieValue);
+                }
+            }
+
+            return cookieCollection;
         }
 
         private static IReadOnlyDictionary<string, string> ParseForm(HeaderCollection headers, string body)
