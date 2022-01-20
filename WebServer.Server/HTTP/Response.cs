@@ -18,6 +18,8 @@
 
         public HeaderCollection Headers { get; }
 
+        public CookieCollection Cookies { get; init; }
+
         public string Body { get; set; }
 
         public Action<Request, Response> PreRenderAction { get; protected set; }
@@ -31,6 +33,11 @@
             foreach (var header in this.Headers)
             {
                 result.AppendLine(header.ToString());
+            }
+
+            foreach (var cookie in Cookies)
+            {
+                result.AppendLine($"{Header.SetCookie}: {cookie}");
             }
 
             result.AppendLine();
