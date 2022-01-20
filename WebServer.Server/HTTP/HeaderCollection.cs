@@ -17,7 +17,12 @@
         public int Count => this.headers.Count;
 
         public void Add(string name, string value)
-            => this.headers[name] = new Header(name, value);
+        {
+            if (!this.headers.ContainsKey(name))
+            {
+                this.headers[name] = new Header(name, value);
+            }
+        }
 
         public bool Contains(string name)
             => this.headers.ContainsKey(name);

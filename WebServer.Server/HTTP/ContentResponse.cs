@@ -20,7 +20,7 @@
 
         public override string ToString()
         {
-            if (this.Body != null && !this.Headers.Any(h => h.Name == Header.ContentLength))
+            if (this.Body != null)
             {
                 var contentLength = Encoding.UTF8.GetByteCount(this.Body).ToString();
                 this.Headers.Add(Header.ContentLength, contentLength);
