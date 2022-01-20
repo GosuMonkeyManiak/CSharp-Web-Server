@@ -9,6 +9,7 @@
             this.StatusCode = statusCode;
 
             this.Headers = new HeaderCollection();
+            this.Cookies = new CookieCollection();
 
             this.Headers.Add(Header.Server, "My Web Server");
             this.Headers.Add(Header.Date, $"{DateTime.UtcNow:r}");
