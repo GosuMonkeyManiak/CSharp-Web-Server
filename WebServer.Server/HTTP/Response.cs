@@ -45,7 +45,7 @@
 
             if (!string.IsNullOrEmpty(this.Body))
             {
-                result.AppendLine(this.Body);
+                result.Append(this.Body);
             }
 
             return result.ToString();
