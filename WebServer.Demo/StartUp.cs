@@ -2,7 +2,9 @@
 {
     using System.Text;
     using System.Web;
+    using Controllers;
     using Server;
+    using Server.Controllers;
     using Server.HTTP;
     using Server.Responses;
 
@@ -35,18 +37,18 @@
                 new string[] { "https://judge.softuni.org/", "https://softuni.bg/" });
 
             var server = new HttpServer(routes => routes
-                .MapGet("/", new TextResponse("Hello from the server."))
-                .MapGet("/Redirect", new RedirectResponse("https://softuni.bg"))
-                .MapGet("/HTML", new HtmlResponse(StartUp.HtmlForm)) 
-                .MapPost("/HTML", new TextResponse("", StartUp.AddFormDataAction))
-                .MapGet("/Content", new HtmlResponse(StartUp.DownloadForm))
-                .MapPost("/Content", new TextFileResponse(StartUp.FileName))
-                .MapGet("/Cookies", new HtmlResponse("", StartUp.AddCookiesAction))
-                .MapGet("/Session", new TextResponse("", StartUp.DisplaySessionInfoAction))
-                .MapGet("/Login", new HtmlResponse(StartUp.LoginForm))
-                .MapPost("/Login", new HtmlResponse("", StartUp.LoginAction))
-                .MapGet("/Logout", new HtmlResponse("", StartUp.LogoutAction))
-                .MapGet("/UserProfile", new HtmlResponse("", StartUp.GetUserDataAction)));
+                .MapGet<HomeController>("/", c => c.Index()));
+                //.MapGet("/Redirect", new RedirectResponse("https://softuni.bg"))
+                //.MapGet("/HTML", new HtmlResponse(StartUp.HtmlForm)) 
+                //.MapPost("/HTML", new TextResponse("", StartUp.AddFormDataAction))
+                //.MapGet("/Content", new HtmlResponse(StartUp.DownloadForm))
+                //.MapPost("/Content", new TextFileResponse(StartUp.FileName))
+                //.MapGet("/Cookies", new HtmlResponse("", StartUp.AddCookiesAction))
+                //.MapGet("/Session", new TextResponse("", StartUp.DisplaySessionInfoAction))
+                //.MapGet("/Login", new HtmlResponse(StartUp.LoginForm))
+                //.MapPost("/Login", new HtmlResponse("", StartUp.LoginAction))
+                //.MapGet("/Logout", new HtmlResponse("", StartUp.LogoutAction))
+                //.MapGet("/UserProfile", new HtmlResponse("", StartUp.GetUserDataAction)));
 
             await server.Start();
         }

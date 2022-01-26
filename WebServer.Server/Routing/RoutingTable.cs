@@ -7,44 +7,37 @@
 
     public class RoutingTable : IRoutingTable
     {
-        private readonly Dictionary<Method, Dictionary<string, Response>> routes;
+        private readonly Dictionary<Method, 
+            Dictionary<string, Func<Request, Response>>> routes;
 
         public RoutingTable() => this.routes = new()
         {
-            [Method.GET] = new(),
-            [Method.POST] = new(),
-            [Method.PUT] = new(),
-            [Method.DELETE] = new()
+            [Method.GET] = new(StringComparer.InvariantCultureIgnoreCase),
+            [Method.POST] = new(StringComparer.InvariantCultureIgnoreCase),
+            [Method.PUT] = new(StringComparer.InvariantCultureIgnoreCase),
+            [Method.DELETE] = new(StringComparer.InvariantCultureIgnoreCase)
         };
 
-        public IRoutingTable Map(string url, Method method, Response response)
-            => method switch
-            {
-                Method.GET => this.MapGet(url, response),
-                Method.POST => this.MapPost(url, response),
-                _ => throw new InvalidOperationException($"Method '{method}' is not supported.")
-            };
-
-        public IRoutingTable MapGet(string url, Response response)
+        public IRoutingTable Map(Method method,
+            string path,
+            Func<Request, Response> responseFunction)
         {
-            Guard.AgainstNull(url, nameof(url));
-            Guard.AgainstNull(response, nameof(response));
+            Guard.AgainstNull(path, nameof(path));
+            Guard.AgainstNull(responseFunction, nameof(responseFunction));
 
-            this.routes[Method.GET][url] = response;
+            this.routes[method][path] = responseFunction;
 
             return this;
         }
 
-        public IRoutingTable MapPost(string url, Response response)
-        {
-            Guard.AgainstNull(url, nameof(url));
-            Guard.AgainstNull(response, nameof(response));
+        public IRoutingTable MapGet(string path,
+            Func<Request, Response> responseFunction)
+            => Map(Method.GET, path, responseFunction);
 
-            this.routes[Method.POST][url] = response;
+        public IRoutingTable MapPost(string path,
+            Func<Request, Response> responseFunction)
+            => Map(Method.POST, path, responseFunction);
 
-            return this;
-
-        }
 
         public Response MatchRequest(Request request)
         {
@@ -57,7 +50,7 @@
                 return new NotFoundResponse();
             }
 
-            return this.routes[requestMethod][requestUrl];
+            return this.routes[requestMethod][requestUrl](request);
         }
     }
 }
