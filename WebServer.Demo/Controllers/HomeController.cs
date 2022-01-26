@@ -4,6 +4,7 @@
     using Server.HTTP;
     using System.Text;
     using System.Web;
+    using Models;
 
     public class HomeController : Controller
     {
@@ -53,15 +54,16 @@
 
         public Response HtmlFormPost()
         {
-            string formData = string.Empty;
+            var name = this.Request.Form["Name"];
+            var age = this.Request.Form["Age"];
 
-            foreach (var (key, value) in this.Request.Form)
+            var model = new FormViewModel()
             {
-                formData += $"{key} - {value}";
-                formData += Environment.NewLine;
-            }
+                Name = name,
+                Age = int.Parse(age)
+            };
 
-            return Text(formData);
+            return View(model);
         }
 
         public Response Content() => View();
