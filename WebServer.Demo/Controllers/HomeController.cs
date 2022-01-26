@@ -1,26 +1,12 @@
 ﻿namespace WebServer.Demo.Controllers
 {
-    using System.IO;
-    using System.Text;
-    using System.Web;
     using Server.Controllers;
     using Server.HTTP;
-    using Server.Responses;
+    using System.Text;
+    using System.Web;
 
     public class HomeController : Controller
     {
-
-        private const string HtmlForm = @"<form action='/HTML' method='POST'>
-               Name: <input type='text' name='Name'/>
-               Age: <input type='number' name ='Age'/>
-               <input type='submit' value ='Save' />
-            </form>";
-
-        private const string DownloadForm = @"<form action='/Content' method='POST'>
-                <input type='submit' value ='Download Sites Content' /> 
-            </form>";
-
-
         private const string FileName = "content.txt";
 
         public HomeController(Request request) 
@@ -63,7 +49,7 @@
 
         public Response Redirect() => Redirect("https://softuni.bg");
 
-        public Response Html() => Html(HomeController.HtmlForm);
+        public Response Html() => View();
 
         public Response HtmlFormPost()
         {
@@ -78,7 +64,7 @@
             return Text(formData);
         }
 
-        public Response Content() => Html(HomeController.DownloadForm);
+        public Response Content() => View();
 
         public Response DownloadContent()
         {

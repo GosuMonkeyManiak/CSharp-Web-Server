@@ -1,6 +1,7 @@
 ﻿namespace WebServer.Server.Controllers
 {
     using System.ComponentModel;
+    using System.Runtime.CompilerServices;
     using HTTP;
     using Responses;
 
@@ -39,5 +40,12 @@
         protected Response Redirect(string location) => new RedirectResponse(location);
 
         protected Response File(string fileName) => new TextFileResponse(fileName);
+
+        protected Response View([CallerMemberName] string viewName = "")
+            => new ViewResponse(viewName, this.GetControllerName());
+
+        private string GetControllerName()
+            => this.GetType().Name
+                .Replace(nameof(Controller), "");
     }
 }
