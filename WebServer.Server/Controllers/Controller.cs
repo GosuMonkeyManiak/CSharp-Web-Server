@@ -6,10 +6,8 @@
 
     public abstract class Controller
     {
-        protected Controller(Request request)
-        {
-            this.Request = request;
-        }
+        protected Controller(Request request) 
+            => this.Request = request;
 
         protected Request Request { get; private init; }
 

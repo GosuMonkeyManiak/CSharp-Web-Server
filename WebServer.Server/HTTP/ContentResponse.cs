@@ -3,9 +3,9 @@
     using System.Text;
     using Common;
 
-    public class ContentResponse : Response
+    public abstract class ContentResponse : Response
     {
-        public ContentResponse(string content, string contentType) 
+        protected ContentResponse(string content, string contentType) 
             : base(StatusCode.OK)
         {
             Guard.AgainstNull(content);

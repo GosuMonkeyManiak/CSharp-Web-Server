@@ -12,10 +12,10 @@
 
         public RoutingTable() => this.routes = new()
         {
-            [Method.GET] = new(StringComparer.InvariantCultureIgnoreCase),
-            [Method.POST] = new(StringComparer.InvariantCultureIgnoreCase),
-            [Method.PUT] = new(StringComparer.InvariantCultureIgnoreCase),
-            [Method.DELETE] = new(StringComparer.InvariantCultureIgnoreCase)
+            [Method.Get] = new(StringComparer.InvariantCultureIgnoreCase),
+            [Method.Post] = new(StringComparer.InvariantCultureIgnoreCase),
+            [Method.Put] = new(StringComparer.InvariantCultureIgnoreCase),
+            [Method.Delete] = new(StringComparer.InvariantCultureIgnoreCase)
         };
 
         public IRoutingTable Map(Method method,
@@ -32,11 +32,11 @@
 
         public IRoutingTable MapGet(string path,
             Func<Request, Response> responseFunction)
-            => Map(Method.GET, path, responseFunction);
+            => Map(Method.Get, path, responseFunction);
 
         public IRoutingTable MapPost(string path,
             Func<Request, Response> responseFunction)
-            => Map(Method.POST, path, responseFunction);
+            => Map(Method.Post, path, responseFunction);
 
 
         public Response MatchRequest(Request request)

@@ -1,11 +1,10 @@
 ﻿namespace WebServer.Server
 {
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Runtime.InteropServices.ComTypes;
-    using System.Text;
     using HTTP;
     using Routing;
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Text;
 
     public class HttpServer
     {
@@ -55,7 +54,7 @@
                 {
                     var networkStream = connection.GetStream();
 
-                    string requestText = await ReadRequestAsync(networkStream);
+                    string requestText = await ReadRequest(networkStream);
 
                     Request request = Request.Parse(requestText);
 
@@ -63,7 +62,7 @@
 
                     AddSession(request, response);
 
-                    await WriteResponseAsync(networkStream, response);
+                    await WriteResponse(networkStream, response);
 
                     connection.Close();
                 });
@@ -82,14 +81,14 @@
             }
         }
 
-        private async Task WriteResponseAsync(NetworkStream networkStream, Response response)
+        private async Task WriteResponse(NetworkStream networkStream, Response response)
         {
             var responseBytes = Encoding.UTF8.GetBytes(response.ToString());
 
             await networkStream.WriteAsync(responseBytes);
         }
 
-        private async Task<string> ReadRequestAsync(NetworkStream networkStream)
+        private async Task<string> ReadRequest(NetworkStream networkStream)
         {
             var bufferLength = 1024;
             var buffer = new byte[bufferLength];

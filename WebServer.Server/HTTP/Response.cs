@@ -2,9 +2,9 @@
 {
     using System.Text;
 
-    public class Response
+    public abstract class Response
     {
-        public Response(StatusCode statusCode)
+        protected Response(StatusCode statusCode)
         {
             this.StatusCode = statusCode;
 
@@ -15,13 +15,13 @@
             this.Headers.Add(Header.Date, $"{DateTime.UtcNow:r}");
         }
 
-        public StatusCode StatusCode { get; init; }
+        protected StatusCode StatusCode { get; init; }
 
-        public HeaderCollection Headers { get; }
+        public HeaderCollection Headers { get; init; }
 
         public CookieCollection Cookies { get; init; }
 
-        public string Body { get; set; }
+        protected string Body { get; set; }
 
         public override string ToString()
         {

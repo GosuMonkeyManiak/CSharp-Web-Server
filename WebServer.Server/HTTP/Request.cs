@@ -6,19 +6,19 @@
     {
         private static Dictionary<string, Session> Sessions = new();
 
-        public Method Method { get; private set; }
+        public Method Method { get; init; }
 
-        public string Url { get; private set; }
+        public string Url { get; init; }
 
-        public HeaderCollection Headers { get; private set; }
+        public HeaderCollection Headers { get; init; }
 
-        public CookieCollection Cookies { get; private set; }
+        public CookieCollection Cookies { get; init; }
 
-        public string Body { get; private set; }
+        public string Body { get; init; }
 
-        public Session Session { get; private set; }
+        public Session Session { get; init; }
 
-        public IReadOnlyDictionary<string, string> Form { get; private set; }
+        public IReadOnlyDictionary<string, string> Form { get; init; }
 
         public static Request Parse(string request)
         {
@@ -152,7 +152,7 @@
         {
             try
             {
-                return Enum.Parse<Method>(method);
+                return Enum.Parse<Method>(method, true);
             }
             catch (Exception)
             {
