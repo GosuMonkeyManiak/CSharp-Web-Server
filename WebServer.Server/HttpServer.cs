@@ -58,7 +58,7 @@
 
                     Request request = Request.Parse(requestText);
 
-                    Response response = this.routingTable.MatchRequest(request);
+                    Response response = this.routingTable.ExecuteRequest(request);
 
                     AddSession(request, response);
 

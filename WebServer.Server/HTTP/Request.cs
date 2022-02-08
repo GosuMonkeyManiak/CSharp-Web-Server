@@ -10,6 +10,8 @@
 
         public string Url { get; init; }
 
+        public IReadOnlyDictionary<string, string> Query { get; init; }
+
         public HeaderCollection Headers { get; init; }
 
         public CookieCollection Cookies { get; init; }
@@ -29,7 +31,8 @@
             var startLine = lines.First().Split(" ");
 
             Method method = ParseMethod(startLine[0]);
-            string url = startLine[1];
+
+            var (url, query) = ParseUrl(startLine[1]);
 
             HeaderCollection headers = ParseHeaders(lines.Skip(1));
 
@@ -47,6 +50,7 @@
             {
                 Method = method,
                 Url =  url,
+                Query = query,
                 Headers = headers,
                 Cookies = cookies,
                 Body = body,
@@ -54,65 +58,33 @@
                 Form = form
             };
         }
-
-        private static Session GetSession(CookieCollection cookies)
+        private static Method ParseMethod(string method)
         {
-            var sessionId = cookies.Contains(Session.SessionCookieName)
-                ? cookies[Session.SessionCookieName]
-                : Guid.NewGuid().ToString();
-
-            if (!Sessions.ContainsKey(sessionId))
+            try
             {
-                Sessions[sessionId] = new Session(sessionId);
+                return Enum.Parse<Method>(method, true);
             }
-
-            return Sessions[sessionId];
+            catch (Exception)
+            {
+                throw new InvalidOperationException($"Method '{method}' is not supported.");
+            }
         }
 
-        private static CookieCollection ParseCookies(HeaderCollection headers)
+        private static (string, Dictionary<string, string>) ParseUrl(string fullUrl)
         {
-            var cookieCollection = new CookieCollection();
+            var urlParts = fullUrl.Split('?', 2);
 
-            if (headers.Contains(Header.Cookie))
-            {
-                var cookieHeader = headers[Header.Cookie];
+            var url = urlParts[0];
 
-                var allCookies = cookieHeader.Split(';');
+            var query = urlParts.Length == 2
+                ? ParseQuery(urlParts[1])
+                : new Dictionary<string, string>();
 
-                foreach (var cookieText in allCookies)
-                {
-                    var cookieParts = cookieText.Split('=', 2);
-
-                    var cookieName = cookieParts[0].Trim();
-                    var cookieValue = cookieParts[1].Trim();
-
-                    cookieCollection.Add(cookieName, cookieValue);
-                }
-            }
-
-            return cookieCollection;
+            return (url, query);
         }
 
-        private static IReadOnlyDictionary<string, string> ParseForm(HeaderCollection headers, string body)
-        {
-            var formCollection = new Dictionary<string, string>();
-
-            if (headers.Contains(Header.ContentType)
-                && headers[Header.ContentType] == ContentType.FormUrlEncoded)
-            {
-                var parsedResult = ParseFormData(body);
-
-                foreach (KeyValuePair<string, string> keyValuePair in parsedResult)
-                {
-                    formCollection.Add(keyValuePair.Key, keyValuePair.Value);
-                }
-            }
-
-            return formCollection;
-        }
-
-        private static Dictionary<string, string> ParseFormData(string bodyLines)
-            => HttpUtility.UrlDecode(bodyLines)
+        private static Dictionary<string, string> ParseQuery(string queryString)
+            => HttpUtility.UrlDecode(queryString)
                 .Split('&')
                 .Select(part => part.Split('='))
                 .Where(part => part.Length == 2)
@@ -148,16 +120,60 @@
             return headerCollection;
         }
 
-        private static Method ParseMethod(string method)
+        private static CookieCollection ParseCookies(HeaderCollection headers)
         {
-            try
+            var cookieCollection = new CookieCollection();
+
+            if (headers.Contains(Header.Cookie))
             {
-                return Enum.Parse<Method>(method, true);
+                var cookieHeader = headers[Header.Cookie];
+
+                var allCookies = cookieHeader.Split(';');
+
+                foreach (var cookieText in allCookies)
+                {
+                    var cookieParts = cookieText.Split('=', 2);
+
+                    var cookieName = cookieParts[0].Trim();
+                    var cookieValue = cookieParts[1].Trim();
+
+                    cookieCollection.Add(cookieName, cookieValue);
+                }
             }
-            catch (Exception)
+
+            return cookieCollection;
+        }
+
+        private static Session GetSession(CookieCollection cookies)
+        {
+            var sessionId = cookies.Contains(Session.SessionCookieName)
+                ? cookies[Session.SessionCookieName]
+                : Guid.NewGuid().ToString();
+
+            if (!Sessions.ContainsKey(sessionId))
             {
-                throw new InvalidOperationException($"Method '{method}' is not supported.");
+                Sessions[sessionId] = new Session(sessionId);
             }
+
+            return Sessions[sessionId];
+        }
+
+        private static IReadOnlyDictionary<string, string> ParseForm(HeaderCollection headers, string body)
+        {
+            var formCollection = new Dictionary<string, string>();
+
+            if (headers.Contains(Header.ContentType)
+                && headers[Header.ContentType] == ContentType.FormUrlEncoded)
+            {
+                var parsedResult = ParseQuery(body);
+
+                foreach (KeyValuePair<string, string> keyValuePair in parsedResult)
+                {
+                    formCollection.Add(keyValuePair.Key, keyValuePair.Value);
+                }
+            }
+
+            return formCollection;
         }
     }
 }

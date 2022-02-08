@@ -7,8 +7,7 @@
 
     public class RoutingTable : IRoutingTable
     {
-        private readonly Dictionary<Method, 
-            Dictionary<string, Func<Request, Response>>> routes;
+        private readonly Dictionary<Method,Dictionary<string, Func<Request, Response>>> routes;
 
         public RoutingTable() => this.routes = new()
         {
@@ -39,7 +38,7 @@
             => Map(Method.Post, path, responseFunction);
 
 
-        public Response MatchRequest(Request request)
+        public Response ExecuteRequest(Request request)
         {
             Method requestMethod = request.Method;
             string requestUrl = request.Url;
