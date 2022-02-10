@@ -1,5 +1,6 @@
 ﻿namespace WebServer.Server.HTTP
 {
+    using Collections;
     using System.Text;
 
     public abstract class Response

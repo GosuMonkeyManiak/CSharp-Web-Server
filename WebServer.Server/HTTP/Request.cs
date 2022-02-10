@@ -1,6 +1,8 @@
 ﻿namespace WebServer.Server.HTTP
 {
     using System.Web;
+    using Collections;
+    using Collections.Contracts;
 
     public class Request
     {
@@ -10,7 +12,7 @@
 
         public string Url { get; init; }
 
-        public IReadOnlyDictionary<string, string> Query { get; init; }
+        public QueryCollection Query { get; init; }
 
         public HeaderCollection Headers { get; init; }
 
@@ -20,7 +22,7 @@
 
         public Session Session { get; init; }
 
-        public IReadOnlyDictionary<string, string> Form { get; init; }
+        public FormCollection Form { get; init; }
 
         public static Request Parse(string request)
         {
@@ -70,28 +72,38 @@
             }
         }
 
-        private static (string, Dictionary<string, string>) ParseUrl(string fullUrl)
+        private static (string, QueryCollection) ParseUrl(string fullUrl)
         {
             var urlParts = fullUrl.Split('?', 2);
 
             var url = urlParts[0];
 
             var query = urlParts.Length == 2
-                ? ParseQuery(urlParts[1])
-                : new Dictionary<string, string>();
+                ? ParseQuery<QueryCollection>(urlParts[1])
+                : new QueryCollection();
 
-            return (url, query);
+            return (url, (QueryCollection) query);
         }
 
-        private static Dictionary<string, string> ParseQuery(string queryString)
-            => HttpUtility.UrlDecode(queryString)
+        private static IQueryCollection ParseQuery<TCollection>(string queryString)
+            where TCollection : IQueryCollection
+        {
+            var keyValues = HttpUtility
+                .UrlDecode(queryString)
                 .Split('&')
                 .Select(part => part.Split('='))
                 .Where(part => part.Length == 2)
-                .ToDictionary(
-                    part => part[0],
-                    part => part[1],
-                    StringComparer.InvariantCultureIgnoreCase);
+                .Select(part => new KeyValuePair<string, string>(part[0], part[1]));
+
+            IQueryCollection queryCollection = Activator.CreateInstance<TCollection>();
+
+            foreach (var (key, value) in keyValues)
+            {
+                queryCollection.Add(key, value);
+            }
+
+            return queryCollection;
+        }
 
         private static HeaderCollection ParseHeaders(IEnumerable<string> HeaderLines)
         {
@@ -158,22 +170,15 @@
             return Sessions[sessionId];
         }
 
-        private static IReadOnlyDictionary<string, string> ParseForm(HeaderCollection headers, string body)
+        private static FormCollection ParseForm(HeaderCollection headers, string body)
         {
-            var formCollection = new Dictionary<string, string>();
-
             if (headers.Contains(Header.ContentType)
                 && headers[Header.ContentType] == ContentType.FormUrlEncoded)
             {
-                var parsedResult = ParseQuery(body);
-
-                foreach (KeyValuePair<string, string> keyValuePair in parsedResult)
-                {
-                    formCollection.Add(keyValuePair.Key, keyValuePair.Value);
-                }
+                return (FormCollection)ParseQuery<FormCollection>(body);
             }
 
-            return formCollection;
+            return new FormCollection();
         }
     }
 }

@@ -3,6 +3,7 @@
     using HTTP;
     using Responses;
     using System.Runtime.CompilerServices;
+    using HTTP.Collections;
 
     public abstract class Controller
     {

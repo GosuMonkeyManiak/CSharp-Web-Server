@@ -1,4 +1,4 @@
-﻿namespace WebServer.Server.HTTP
+﻿namespace WebServer.Server.HTTP.Collections
 {
     using System.Collections;
 
