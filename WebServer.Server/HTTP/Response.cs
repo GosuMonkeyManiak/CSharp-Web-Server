@@ -2,10 +2,11 @@
 {
     using Collections;
     using System.Text;
+    using Common;
 
-    public abstract class Response
+    public class Response
     {
-        protected Response(StatusCode statusCode)
+        public Response(StatusCode statusCode)
         {
             this.StatusCode = statusCode;
 
@@ -16,13 +17,32 @@
             this.Headers.Add(Header.Date, $"{DateTime.UtcNow:r}");
         }
 
-        protected StatusCode StatusCode { get; init; }
+        public StatusCode StatusCode { get; protected set; }
 
         public HeaderCollection Headers { get; init; }
 
         public CookieCollection Cookies { get; init; }
 
-        protected string Body { get; set; }
+        public string Body { get; protected set; }
+
+        public static Response ForError(string message)
+            => new Response(StatusCode.InternalServerError)
+                .SetContent(message, ContentType.PlainText);
+
+        public Response SetContent(string content, string contentType)
+        {
+            Guard.AgainstNull(content, nameof(content));
+            Guard.AgainstNull(contentType, nameof(contentType));
+
+            var contentLength = Encoding.UTF8.GetByteCount(content);
+
+            this.Headers.Add(Header.ContentType, contentType);
+            this.Headers.Add(Header.ContentLength, contentType);
+
+            this.Body = content;
+
+            return this;
+        }
 
         public override string ToString()
         {

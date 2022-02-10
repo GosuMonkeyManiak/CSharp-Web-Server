@@ -2,10 +2,10 @@
 {
     using HTTP;
 
-    public class TextFileResponse : Response
+    public class TextFileResult : ActionResult
     {
-        public TextFileResponse(string fileName) 
-            : base(StatusCode.OK)
+        public TextFileResult(Response response, string fileName) 
+            : base(response)
         {
             this.FileName = fileName;
 

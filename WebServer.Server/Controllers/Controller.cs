@@ -3,47 +3,45 @@
     using HTTP;
     using Responses;
     using System.Runtime.CompilerServices;
-    using HTTP.Collections;
 
     public abstract class Controller
     {
-        protected Controller(Request request) 
-            => this.Request = request;
+        protected Controller(Request request)
+        {
+            this.Request = request;
+            this.Response = new Response(StatusCode.OK);
+        }
 
         protected Request Request { get; private init; }
 
-        protected Response Text(string text) => new TextResponse(text);
+        protected Response Response { get; private init; }
 
-        protected Response Html(string html, CookieCollection cookies = null)
-        {
-            var response = new HtmlResponse(html);
+        protected Response Text(string text) 
+            => new TextResult(this.Response, text);
 
-            if (cookies != null)
-            {
-                foreach (var cookie in cookies)
-                {
-                    response.Cookies.Add(cookie.Name, cookie.Value);
-                }
-            }
+        protected Response Html(string html)
+            => new HtmlResult(this.Response, html);
 
-            return response;
-        }
+        protected Response BadRequest() 
+            => new BadRequestResult(this.Response);
 
-        protected Response BadRequest() => new BadRequestResponse();
+        protected Response Unauthorized() 
+            => new UnauthorizedResult(this.Response);
 
-        protected Response Unauthorized() => new UnauthorizedResponse();
+        protected Response NotFound() 
+            => new NotFoundResult(this.Response);
 
-        protected Response NotFound() => new NotFoundResponse();
+        protected Response Redirect(string location) 
+            => new RedirectResult(this.Response, location);
 
-        protected Response Redirect(string location) => new RedirectResponse(location);
-
-        protected Response File(string fileName) => new TextFileResponse(fileName);
+        protected Response File(string fileName) 
+            => new TextFileResult(this.Response, fileName);
 
         protected Response View([CallerMemberName] string viewName = "")
-            => new ViewResponse(viewName, this.GetControllerName());
+            => new ViewResult(this.Response, viewName, this.GetControllerName());
 
         protected Response View(object model, [CallerMemberName] string viewName = "")
-            => new ViewResponse(viewName, this.GetControllerName(), model);
+            => new ViewResult(this.Response, viewName, this.GetControllerName(), model);
 
         private string GetControllerName()
             => this.GetType().Name

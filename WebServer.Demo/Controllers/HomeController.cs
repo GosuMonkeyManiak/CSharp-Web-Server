@@ -106,7 +106,7 @@
             cookies.Add("My-Cookie", "My-Cookie");
             cookies.Add("My-Second-Cookie", "My-Second-Value");
 
-            return Html("<h1>Cookies set!</h1>", cookies);
+            return Html("<h1>Cookies set!</h1>");
         }
 
         public Response Session()

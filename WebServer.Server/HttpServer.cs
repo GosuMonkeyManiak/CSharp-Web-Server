@@ -109,8 +109,9 @@
 
         private async Task HandleError(NetworkStream networkStream, Exception exception)
         {
-            //TODO: make it more correctly
-            var errorResponse = new TextResponse($"{exception.Message}{Environment.NewLine}{exception.StackTrace}");
+            var errorMessage = $"{exception.Message}{Environment.NewLine}{exception.StackTrace}";
+
+            var errorResponse = Response.ForError(errorMessage);
 
             await WriteResponse(networkStream, errorResponse);
         }

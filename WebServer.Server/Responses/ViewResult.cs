@@ -2,12 +2,16 @@
 {
     using HTTP;
 
-    public class ViewResponse : ContentResponse
+    public class ViewResult : ContentResult
     {
         private const char PathSeparator = '/';
 
-        public ViewResponse(string viewName, string controllerName, object model = null)
-            : base(string.Empty, ContentType.Html)
+        public ViewResult(
+            Response response, 
+            string viewName, 
+            string controllerName, 
+            object model = null)
+            : base(response, string.Empty, ContentType.Html)
         {
             if (!viewName.Contains(PathSeparator))
             {

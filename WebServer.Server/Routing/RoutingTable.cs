@@ -45,7 +45,7 @@
             if (!this.routes.ContainsKey(requestMethod) 
                 || !this.routes[requestMethod].ContainsKey(requestUrl))
             {
-                return new NotFoundResponse();
+                return new Response(StatusCode.NotFound);
             }
 
             return this.routes[requestMethod][requestUrl](request);

@@ -32,7 +32,7 @@
                     var cookieCollection = new CookieCollection();
                     cookieCollection.Add(Session.SessionCookieName, this.Request.Session.Id);
 
-                    return Html("<h3>Logged successfully!</h3>", cookieCollection);
+                    return Html("<h3>Logged successfully!</h3>");
                 }
 
                 return Html("<h3>Logged successfully!</h3>");
