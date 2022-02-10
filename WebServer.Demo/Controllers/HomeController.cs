@@ -121,5 +121,7 @@
 
             return Text("Current date stored!");
         }
+
+        public Response Error() => throw new InvalidOperationException("Invalid");
     }
 }

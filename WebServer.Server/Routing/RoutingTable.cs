@@ -17,7 +17,8 @@
             [Method.Delete] = new(StringComparer.InvariantCultureIgnoreCase)
         };
 
-        public IRoutingTable Map(Method method,
+        public IRoutingTable Map(
+            Method method,
             string path,
             Func<Request, Response> responseFunction)
         {
@@ -29,12 +30,10 @@
             return this;
         }
 
-        public IRoutingTable MapGet(string path,
-            Func<Request, Response> responseFunction)
+        public IRoutingTable MapGet(string path, Func<Request, Response> responseFunction)
             => Map(Method.Get, path, responseFunction);
 
-        public IRoutingTable MapPost(string path,
-            Func<Request, Response> responseFunction)
+        public IRoutingTable MapPost(string path, Func<Request, Response> responseFunction)
             => Map(Method.Post, path, responseFunction);
 
 

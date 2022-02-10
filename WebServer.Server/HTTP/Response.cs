@@ -40,10 +40,10 @@
                 result.AppendLine($"{Header.SetCookie}: {cookie}");
             }
 
-            result.AppendLine();
-
             if (!string.IsNullOrEmpty(this.Body))
             {
+                result.AppendLine();
+
                 result.Append(this.Body);
             }
 

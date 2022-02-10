@@ -5,6 +5,7 @@
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
+    using Responses;
 
     public class HttpServer
     {
@@ -30,13 +31,11 @@
         public HttpServer(int port, Action<IRoutingTable> routingTableConfiguration)
             : this("127.0.0.1", port, routingTableConfiguration)
         {
-            
         }
 
         public HttpServer(Action<IRoutingTable> routingTableConfiguration)
             : this(8080, routingTableConfiguration)
         {
-            
         }
 
         public async Task Start()
@@ -56,13 +55,22 @@
 
                     string requestText = await ReadRequest(networkStream);
 
-                    Request request = Request.Parse(requestText);
+                    try
+                    {
+                        Request request = Request.Parse(requestText);
 
-                    Response response = this.routingTable.ExecuteRequest(request);
+                        Response response = this.routingTable.ExecuteRequest(request);
 
-                    AddSession(request, response);
+                        AddSession(request, response);
 
-                    await WriteResponse(networkStream, response);
+                        this.LogPipeLine(request, response);
+
+                        await WriteResponse(networkStream, response);
+                    }
+                    catch (Exception exception)
+                    {
+                        await HandleError(networkStream, exception);
+                    }
 
                     connection.Close();
                 });
@@ -70,23 +78,7 @@
         }
 
         private void AddSession(Request request, Response response)
-        {
-            var sessionExist = request.Session
-                .ContainsKey(Session.SessionCurrentDateKey);
-
-            if (!sessionExist)
-            {
-                request.Session[Session.SessionCurrentDateKey] = DateTime.Now.ToString();
-                response.Cookies.Add(Session.SessionCookieName, request.Session.Id);
-            }
-        }
-
-        private async Task WriteResponse(NetworkStream networkStream, Response response)
-        {
-            var responseBytes = Encoding.UTF8.GetBytes(response.ToString());
-
-            await networkStream.WriteAsync(responseBytes);
-        }
+            => response.Cookies.Add(Session.SessionCookieName, request.Session.Id);
 
         private async Task<string> ReadRequest(NetworkStream networkStream)
         {
@@ -113,6 +105,39 @@
             } while (networkStream.DataAvailable); //May not run correctly over the Internet
 
             return requestBuilder.ToString();
+        }
+
+        private async Task HandleError(NetworkStream networkStream, Exception exception)
+        {
+            //TODO: make it more correctly
+            var errorResponse = new TextResponse($"{exception.Message}{Environment.NewLine}{exception.StackTrace}");
+
+            await WriteResponse(networkStream, errorResponse);
+        }
+
+        private void LogPipeLine(Request request, Response response)
+        {
+            string messageSeparator = new string('-', 50);
+
+            var logMessage = new StringBuilder();
+
+            logMessage.AppendLine(messageSeparator);
+            logMessage.AppendLine();
+
+            logMessage.AppendLine("Request:");
+            logMessage.AppendLine(request.ToString());
+            
+            logMessage.AppendLine("Response:");
+            logMessage.AppendLine(response.ToString());
+
+            Console.WriteLine(logMessage);
+        }
+
+        private async Task WriteResponse(NetworkStream networkStream, Response response)
+        {
+            var responseBytes = Encoding.UTF8.GetBytes(response.ToString());
+
+            await networkStream.WriteAsync(responseBytes);
         }
     }
 }

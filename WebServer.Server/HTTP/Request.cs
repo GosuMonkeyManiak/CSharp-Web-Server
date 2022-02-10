@@ -1,5 +1,6 @@
 ﻿namespace WebServer.Server.HTTP
 {
+    using System.Text;
     using System.Web;
     using Collections;
     using Collections.Contracts;
@@ -82,10 +83,10 @@
                 ? ParseQuery<QueryCollection>(urlParts[1])
                 : new QueryCollection();
 
-            return (url, (QueryCollection) query);
+            return (url, query);
         }
 
-        private static IQueryCollection ParseQuery<TCollection>(string queryString)
+        private static TCollection ParseQuery<TCollection>(string queryString)
             where TCollection : IQueryCollection
         {
             var keyValues = HttpUtility
@@ -95,7 +96,7 @@
                 .Where(part => part.Length == 2)
                 .Select(part => new KeyValuePair<string, string>(part[0], part[1]));
 
-            IQueryCollection queryCollection = Activator.CreateInstance<TCollection>();
+            var queryCollection = Activator.CreateInstance<TCollection>();
 
             foreach (var (key, value) in keyValues)
             {
@@ -175,10 +176,31 @@
             if (headers.Contains(Header.ContentType)
                 && headers[Header.ContentType] == ContentType.FormUrlEncoded)
             {
-                return (FormCollection)ParseQuery<FormCollection>(body);
+                return ParseQuery<FormCollection>(body);
             }
 
             return new FormCollection();
+        }
+
+        public override string ToString()
+        {
+            var request = new StringBuilder();
+
+            request.AppendLine($"{this.Method} {this.Url} HTTP/1.1");
+
+            foreach (var header in this.Headers)
+            {
+                request.AppendLine(header.ToString());
+            }
+
+            if (this.Body != null)
+            {
+                request.AppendLine();
+
+                request.Append(this.Body);
+            }
+
+            return request.ToString();
         }
     }
 }
