@@ -32,5 +32,8 @@
 
         public void Clear()
             => this.data.Clear();
+
+        public void Remove(string key)
+            => this.data.Remove(key);
     }
 }

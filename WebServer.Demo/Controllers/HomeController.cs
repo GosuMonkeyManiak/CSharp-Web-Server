@@ -45,8 +45,7 @@
                 return html.Substring(0, 2000);
             }
         }
-
-
+        
         public Response Index() => Text("Hello from the server!");
 
         public Response Redirect() => Redirect("https://softuni.bg");
@@ -101,10 +100,9 @@
 
                 return Html(cookieText.ToString());
             }
-
-            var cookies = new CookieCollection();
-            cookies.Add("My-Cookie", "My-Cookie");
-            cookies.Add("My-Second-Cookie", "My-Second-Value");
+            
+            this.Response.Cookies.Add("My-Cookie", "My-Cookie");
+            this.Response.Cookies.Add("My-Second-Cookie", "My-Second-Value");
 
             return Html("<h1>Cookies set!</h1>");
         }
@@ -118,6 +116,8 @@
                 var currentDate = this.Request.Session[Server.HTTP.Session.SessionCurrentDateKey];
                 return Text($"Stored date: {currentDate}");
             }
+
+            this.Request.Session[Server.HTTP.Session.SessionCurrentDateKey] = DateTime.UtcNow.ToString();
 
             return Text("Current date stored!");
         }
