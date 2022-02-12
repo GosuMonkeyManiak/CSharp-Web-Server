@@ -46,7 +46,7 @@
             }
         }
         
-        public Response Index() => Text("Hello from the server!");
+        public Response Index() => View();
 
         public Response Redirect() => Redirect("https://softuni.bg");
 

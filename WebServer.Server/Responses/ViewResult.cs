@@ -11,7 +11,13 @@
             string viewName, 
             string controllerName, 
             object model = null)
-            : base(response, string.Empty, ContentType.Html)
+            : base(response, string.Empty, ContentType.Html) 
+            => this.Body = GetHtml(viewName, controllerName, model);
+
+        private string GetHtml(
+            string viewName, 
+            string controllerName, 
+            object model = null)
         {
             if (!viewName.Contains(PathSeparator))
             {
@@ -29,8 +35,14 @@
             {
                 viewContent = this.PopulateModel(viewContent, model);
             }
+            
+            var layoutPath = Path.GetFullPath("./Views/_Layout.cshtml");
 
-            this.Body = viewContent;
+            var layoutContent = File.ReadAllText(layoutPath);
+
+            layoutContent = layoutContent.Replace("@RenderBody", viewContent);
+
+            return layoutContent;
         }
 
         private string PopulateModel(string viewContent, object model)
@@ -46,11 +58,8 @@
 
             foreach (var entry in data)
             {
-                const string openingBrackets = "{{";
-                const string closingBrackets = "}}";
-
                 viewContent = viewContent.Replace(
-                    $"{openingBrackets}{entry.Name}{closingBrackets}",
+                    $"@Model.{entry.Name}",
                     entry.Value.ToString());
             }
 

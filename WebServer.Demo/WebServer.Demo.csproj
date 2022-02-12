@@ -16,9 +16,11 @@
 
   <ItemGroup>
     <None Remove="Views\Home\HtmlFormPost.cshtml" />
+    <None Remove="Views\Home\Index.cshtml" />
     <None Remove="Views\Users\GetUserData.cshtml" />
     <None Remove="Views\Users\LogInUser.cshtml" />
     <None Remove="Views\Users\Logout.cshtml" />
+    <None Remove="Views\_Layout.cshtml" />
   </ItemGroup>
 
 </Project>
