@@ -60,13 +60,9 @@
             => new TextFileResult(this.Response, fileName, disposition);
 
         protected Response View([CallerMemberName] string viewName = "")
-            => new ViewResult(this.Response, viewName, this.GetControllerName());
+            => new ViewResult(this.Response, viewName, this.GetType().GetControllerName());
 
         protected Response View(object model, [CallerMemberName] string viewName = "")
-            => new ViewResult(this.Response, viewName, this.GetControllerName(), model);
-
-        private string GetControllerName()
-            => this.GetType().Name
-                .Replace(nameof(Controller), "");
+            => new ViewResult(this.Response, viewName, this.GetType().GetControllerName(), model);
     }
 }

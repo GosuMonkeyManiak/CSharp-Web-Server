@@ -14,6 +14,9 @@
         {
         }
 
+        public Response Index()
+            => View();
+
         public Response Login()
         {
             if (this.Request.Session.ContainsKey(Session.SessionUserKey))

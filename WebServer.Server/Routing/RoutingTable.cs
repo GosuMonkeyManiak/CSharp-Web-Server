@@ -38,8 +38,8 @@
 
         public Response ExecuteRequest(Request request)
         {
-            Method requestMethod = request.Method;
-            string requestUrl = request.Url;
+            var requestMethod = request.Method;
+            var requestUrl = request.Url;
 
             if (!this.routes.ContainsKey(requestMethod) 
                 || !this.routes[requestMethod].ContainsKey(requestUrl))

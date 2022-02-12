@@ -8,19 +8,21 @@
 
     public class HomeController : Controller
     {
-        private const string FileName = "content.txt";
-
         public HomeController(Request request) 
             : base(request)
         {
         }
+        
+        public Response Index() 
+            => View();
 
-        public Response Index() => View();
+        public Response Redirect() 
+            => Redirect("https://softuni.bg");
 
-        public Response Redirect() => Redirect("https://softuni.bg");
+        public Response Html() 
+            => View();
 
-        public Response Html() => View();
-
+        [HttpPost]
         public Response HtmlFormPost()
         {
             var name = this.Request.Form["Name"];
