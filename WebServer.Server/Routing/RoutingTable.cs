@@ -49,5 +49,38 @@
 
             return this.routes[requestMethod][requestUrl](request);
         }
+        public IRoutingTable MapStaticFiles(string folder = Settings.StaticFilesRootFolder)
+        {
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var staticFileFolder = Path.Combine(currentDirectory, folder);
+
+            if (!Directory.Exists(staticFileFolder))
+            {
+                return this;
+            }
+
+            var staticFiles = Directory
+                .GetFiles(staticFileFolder, "*.*", SearchOption.AllDirectories);
+
+            foreach (var file in staticFiles)
+            {
+                var relativePath = Path.GetRelativePath(staticFileFolder, file);
+
+                var urlPath = "/" + relativePath.Replace("\\", "/");
+
+                this.MapGet(urlPath, request =>
+                {
+                    var fileExtension = Path.GetExtension(urlPath).TrimStart('.');
+
+                    var content = File.ReadAllBytes(file);
+                    var contentType = ContentType.GetTypeByFileExtension(fileExtension);
+
+                    return new Response(StatusCode.OK)
+                        .SetContent(content, contentType);
+                });
+            }
+
+            return this;
+        }
     }
 }

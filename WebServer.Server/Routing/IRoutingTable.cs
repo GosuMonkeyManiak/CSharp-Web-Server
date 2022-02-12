@@ -1,9 +1,12 @@
 ﻿namespace WebServer.Server.Routing
 {
+    using Common;
     using HTTP;
 
     public interface IRoutingTable
     {
+        IRoutingTable MapStaticFiles(string folder = Settings.StaticFilesRootFolder);
+
         IRoutingTable Map(
             Method method,
             string path,

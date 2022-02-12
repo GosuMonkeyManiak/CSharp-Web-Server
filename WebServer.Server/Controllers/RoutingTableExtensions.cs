@@ -20,5 +20,6 @@
             => routingTable.MapPost(path, request => controllerFunction(CreateController<TController>(request)));
 
         private static TController CreateController<TController>(Request request)
-            => (TController)Activator.CreateInstance(typeof(TController), new object[] { request }); }
+            => (TController)Activator.CreateInstance(typeof(TController), new object[] { request });
+    }
 }

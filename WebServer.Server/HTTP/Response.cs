@@ -23,7 +23,7 @@
 
         public CookieCollection Cookies { get; init; }
 
-        public string Body { get; protected set; }
+        public byte[] Body { get; protected set; }
 
         public static Response ForError(string message)
             => new Response(StatusCode.InternalServerError)
@@ -31,10 +31,16 @@
 
         public Response SetContent(string content, string contentType)
         {
+            var contentBytes = Encoding.UTF8.GetBytes(content);
+            return this.SetContent(contentBytes, contentType);
+        }
+
+        public Response SetContent(byte[] content, string contentType)
+        {
             Guard.AgainstNull(content, nameof(content));
             Guard.AgainstNull(contentType, nameof(contentType));
 
-            var contentLength = Encoding.UTF8.GetByteCount(content);
+            var contentLength = content.Length;
 
             this.Headers.Add(Header.ContentType, contentType);
             this.Headers.Add(Header.ContentLength, contentType);
@@ -60,11 +66,9 @@
                 result.AppendLine($"{Header.SetCookie}: {cookie}");
             }
 
-            if (!string.IsNullOrEmpty(this.Body))
+            if (this.Body != null)
             {
                 result.AppendLine();
-
-                result.Append(this.Body);
             }
 
             return result.ToString();

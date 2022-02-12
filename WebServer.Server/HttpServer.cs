@@ -62,9 +62,9 @@
 
                         AddSession(request, response);
 
-                        this.LogPipeLine(request, response);
-
                         await WriteResponse(networkStream, response);
+
+                        this.LogPipeLine(request, response);
                     }
                     catch (Exception exception)
                     {
@@ -144,6 +144,11 @@
             var responseBytes = Encoding.UTF8.GetBytes(response.ToString());
 
             await networkStream.WriteAsync(responseBytes);
+
+            if (response.Body != null)
+            {
+                await networkStream.WriteAsync(response.Body);
+            }
         }
     }
 }

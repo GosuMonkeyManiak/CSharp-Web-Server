@@ -4,6 +4,8 @@
 
     public class Header
     {
+        public const string AttachmentFile = "attachment; filename=\"{0}\"";
+        public const string InlineFile = "inline";
         public const string ContentType = "Content-Type";
         public const string ContentLength = "Content-Length";
         public const string ContentDisposition = "Content-Disposition";

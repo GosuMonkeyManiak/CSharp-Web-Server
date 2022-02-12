@@ -56,8 +56,8 @@
         protected Response Redirect(string location) 
             => new RedirectResult(this.Response, location);
 
-        protected Response File(string fileName) 
-            => new TextFileResult(this.Response, fileName);
+        protected Response File(string fileName, string disposition = "") 
+            => new TextFileResult(this.Response, fileName, disposition);
 
         protected Response View([CallerMemberName] string viewName = "")
             => new ViewResult(this.Response, viewName, this.GetControllerName());

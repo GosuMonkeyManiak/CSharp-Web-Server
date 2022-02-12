@@ -1,5 +1,6 @@
 ﻿namespace WebServer.Server.Results
 {
+    using System.Text;
     using HTTP;
 
     public class ViewResult : ContentResult
@@ -14,7 +15,7 @@
             : base(response, string.Empty, ContentType.Html) 
             => this.Body = GetHtml(viewName, controllerName, model);
 
-        private string GetHtml(
+        private byte[] GetHtml(
             string viewName, 
             string controllerName, 
             object model = null)
@@ -42,7 +43,7 @@
 
             layoutContent = layoutContent.Replace("@RenderBody", viewContent);
 
-            return layoutContent;
+            return Encoding.UTF8.GetBytes(layoutContent);
         }
 
         private string PopulateModel(string viewContent, object model)

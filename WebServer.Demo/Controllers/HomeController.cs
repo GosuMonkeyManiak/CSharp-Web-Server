@@ -15,36 +15,6 @@
         {
         }
 
-        private static async Task DownloadSitesAsTextFile(string fileName, string[] urls)
-        {
-            var downloads = new List<Task<string>>();
-
-            foreach (var url in urls)
-            {
-                downloads.Add(DownloadWebSiteContentAsync(url));
-            }
-
-            var responses = await Task.WhenAll(downloads);
-
-            var responsesString = string.Join(Environment.NewLine + new string('-', 100), responses);
-
-            await System.IO.File.WriteAllTextAsync(fileName, responsesString);
-        }
-
-        private static async Task<string> DownloadWebSiteContentAsync(string url)
-        {
-            var httpClient = new HttpClient();
-
-            using (httpClient)
-            {
-                var response = await httpClient.GetAsync(url);
-
-                var html = await response.Content.ReadAsStringAsync();
-
-                return html.Substring(0, 2000);
-            }
-        }
-        
         public Response Index() => View();
 
         public Response Redirect() => Redirect("https://softuni.bg");
@@ -67,14 +37,8 @@
 
         public Response Content() => View();
 
-        public Response DownloadContent()
-        {
-           DownloadSitesAsTextFile(HomeController.FileName,
-                new[] { "https://softuni.bg/", "https://judge.softuni.org/" })
-               .Wait();
-
-           return File(HomeController.FileName);
-        }
+        public Response DownloadContent() 
+            => File("test.pdf", Header.InlineFile);
 
         public Response Cookies()
         {
@@ -122,5 +86,14 @@
         }
 
         public Response Error() => throw new InvalidOperationException("Invalid");
+
+        public Response PowerPoint()
+            => File("testPowerPoint.pptx");
+
+        public Response Word()
+            => File("TestWord.docx");
+
+        public Response Excel()
+            => File("TestExcel.xlsx");
     }
 }

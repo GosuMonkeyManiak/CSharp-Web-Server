@@ -8,8 +8,12 @@
     {
         public static async Task Main(string[] args)
             => await new HttpServer(routes => routes
+                    .MapStaticFiles()
                     .MapGet<HomeController>("/", c => c.Index())
                     .MapGet<HomeController>("/Redirect", c => c.Redirect())
+                    .MapGet<HomeController>("/PowerPoint", c => c.PowerPoint())
+                    .MapGet<HomeController>("/Word", c => c.Word())
+                    .MapGet<HomeController>("/Excel", c => c.Excel())
                     .MapGet<HomeController>("/HTML", c => c.Html())
                     .MapPost<HomeController>("/HTML", c => c.HtmlFormPost())
                     .MapGet<HomeController>("/Content", c => c.Content())

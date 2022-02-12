@@ -1,30 +1,49 @@
 ﻿namespace WebServer.Server.Results
 {
+    using Common;
     using HTTP;
 
     public class TextFileResult : ActionResult
     {
-        public TextFileResult(Response response, string fileName) 
+        public TextFileResult(Response response, string fileName, string disposition = Header.AttachmentFile)
             : base(response)
         {
             this.FileName = fileName;
-
-            this.Headers.Add(Header.ContentType, ContentType.PlainText);
+            this.Disposition = disposition;
         }
 
         public string FileName { get; init; }
 
+        public string Disposition { get; init; }
+
         public override string ToString()
         {
-            if (File.Exists(this.FileName))
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var wwwRootDirectory = Path.Combine(currentDirectory, Settings.FilesFolder);
+            var fileDirectory = Path.Combine(wwwRootDirectory, this.FileName);
+
+            if (!File.Exists(fileDirectory))
             {
-                this.Body = File.ReadAllTextAsync(this.FileName).Result;
+                throw new InvalidOperationException("File doesn't exist");
+;           }
 
-                var fileBytesCount = new FileInfo(this.FileName).Length;
-                this.Headers.Add(Header.ContentLength, fileBytesCount.ToString());
+            var contentBytes = File.ReadAllBytes(fileDirectory);
 
-                this.Headers.Add(Header.ContentDisposition, $"attachment; filename\"{this.FileName}\"");
+            var fileExtension = Path.GetExtension(fileDirectory).TrimStart('.');
+            var contentType = ContentType.GetTypeByFileExtension(fileExtension);
+
+            var fileName = Path.GetFileName(fileDirectory);
+
+            string disposition = string.Format(Header.AttachmentFile, fileName);
+
+            if (this.Disposition == Header.InlineFile)
+            {
+                disposition = Header.InlineFile;
             }
+
+            this.Headers.Add(Header.ContentDisposition, disposition);
+
+            this.SetContent(contentBytes, contentType);
 
             return base.ToString();
         }
