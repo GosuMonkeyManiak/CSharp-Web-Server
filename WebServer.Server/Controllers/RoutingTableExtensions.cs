@@ -165,6 +165,7 @@
                 {
                     var classProperties = parameterType
                         .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                        .Where(p => p.GetCustomAttribute<NeverBindAttribute>() == null)
                         .ToList();
 
                     var parameterClass = Activator.CreateInstance(parameterType);
