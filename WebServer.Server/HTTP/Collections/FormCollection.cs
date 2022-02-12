@@ -20,5 +20,11 @@
 
             this.form[key] = value;
         }
+
+        public bool Contains(string key)
+            => this.form.ContainsKey(key);
+
+        public string GetValueOrDefault(string key)
+            => this.form.GetValueOrDefault(key);
     }
 }

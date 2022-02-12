@@ -6,6 +6,8 @@
 
     public static class RoutingTableExtensions
     {
+        private static Type stringType = typeof(string);
+
         public static IRoutingTable MapGet<TController>(
             this IRoutingTable routingTable,
             string path,
@@ -108,7 +110,9 @@
 
                 var controller = CreateController(controllerType, request);
 
-                return (Response) action.Invoke(controller, Array.Empty<object>());
+                var parameters = GetParametersValues(action, request);
+
+                return (Response) action.Invoke(controller, parameters);
             };
 
         private static void MapDefaultRoutes(
@@ -131,5 +135,63 @@
                 }
             }
         }
+
+        private static object[] GetParametersValues(MethodInfo action, Request request)
+        {
+            var actionParameters = action
+                .GetParameters()
+                .Select(p => new
+                {
+                    p.Name,
+                    Type = p.ParameterType
+                })
+                .ToList();
+
+            var parametersValues = new List<object>(actionParameters.Count);
+
+            foreach (var parameterInfo in actionParameters)
+            {
+                var parameterName = parameterInfo.Name;
+                var parameterType = parameterInfo.Type;
+
+                if (parameterType.IsPrimitive || parameterType == stringType)
+                {
+                    var requestValue = request.GetValue(parameterName);
+
+                    var parameterValue = Convert.ChangeType(requestValue, parameterType);
+                    parametersValues.Add(parameterValue);
+                }
+                else if (parameterType.IsClass)
+                {
+                    var classProperties = parameterType
+                        .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                        .ToList();
+
+                    var parameterClass = Activator.CreateInstance(parameterType);
+
+                    foreach (var propertyInfo in classProperties)
+                    {
+                        var propertyName = propertyInfo.Name;
+                        var propertyType = propertyInfo.PropertyType;
+
+                        var requestValue = request.GetValue(propertyName);
+
+                        var propertyValue = Convert.ChangeType(requestValue, propertyType);
+
+                        propertyInfo
+                            .SetValue(parameterClass, propertyValue);
+                    }
+
+                    parametersValues.Add(parameterClass);
+                }
+
+            }
+
+            return parametersValues.ToArray();
+        }
+
+        private static string GetValue(this Request request, string key)
+            => request.Query.GetValueOrDefault(key) ??
+               request.Form.GetValueOrDefault(key);
     }
 }

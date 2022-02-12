@@ -18,19 +18,8 @@
             => View();
 
         [HttpPost]
-        public Response HtmlFormPost()
-        {
-            var name = this.Request.Form["Name"];
-            var age = this.Request.Form["Age"];
-
-            var model = new FormViewModel()
-            {
-                Name = name,
-                Age = int.Parse(age)
-            };
-
-            return View(model);
-        }
+        public Response Html(FormViewModel formModel) 
+            => View(formModel, "HtmlFormPost");
 
         public Response Content() 
             => View();

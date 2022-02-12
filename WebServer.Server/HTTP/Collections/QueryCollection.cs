@@ -21,5 +21,10 @@
             this.query[key] = value;
         }
 
+        public bool Contains(string key)
+            => this.query.ContainsKey(key);
+
+        public string GetValueOrDefault(string key)
+            => this.query.GetValueOrDefault(key);
     }
 }
