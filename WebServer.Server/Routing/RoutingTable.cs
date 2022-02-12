@@ -3,7 +3,6 @@
     using HTTP;
     using System;
     using Common;
-    using Responses;
 
     public class RoutingTable : IRoutingTable
     {

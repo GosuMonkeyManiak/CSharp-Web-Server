@@ -3,6 +3,7 @@
     using HTTP;
     using Responses;
     using System.Runtime.CompilerServices;
+    using Identity;
 
     public abstract class Controller
     {
@@ -10,11 +11,32 @@
         {
             this.Request = request;
             this.Response = new Response(StatusCode.OK);
+
+            this.User = this.Request.Session.ContainsKey(Session.SessionUserKey)
+                ? this.User = new() { Id = this.Request.Session[Session.SessionUserKey] }
+                : this.User = new();
         }
 
         protected Request Request { get; private init; }
 
         protected Response Response { get; private init; }
+
+        protected UserIdentity User { get; private set; }
+
+        protected void SignIn(string userId)
+        {
+            this.Request.Session[Session.SessionUserKey] = userId;
+            this.User = new()
+            {
+                Id = userId
+            };
+        }
+
+        protected void SignOut()
+        {
+            this.Request.Session.Remove(Session.SessionUserKey);
+            this.User = new();
+        }
 
         protected Response Text(string text) 
             => new TextResult(this.Response, text);

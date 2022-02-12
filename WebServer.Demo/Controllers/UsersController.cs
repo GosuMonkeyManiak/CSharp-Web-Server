@@ -3,7 +3,6 @@
     using Models;
     using Server.Controllers;
     using Server.HTTP;
-    using Server.HTTP.Collections;
 
     public class UsersController : Controller
     {

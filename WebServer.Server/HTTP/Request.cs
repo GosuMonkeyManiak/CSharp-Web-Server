@@ -165,7 +165,7 @@
 
             if (!Sessions.ContainsKey(sessionId))
             {
-                Sessions[sessionId] = new Session(sessionId);
+                Sessions[sessionId] = new Session(sessionId) { IsNew = true };
             }
 
             return Sessions[sessionId];

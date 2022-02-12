@@ -21,6 +21,8 @@
 
         public string Id { get; init; }
 
+        public bool IsNew { get; set; }
+
         public string this[string key]
         {
             get => this.data[key];
@@ -29,9 +31,6 @@
 
         public bool ContainsKey(string key)
             => this.data.ContainsKey(key);
-
-        public void Clear()
-            => this.data.Clear();
 
         public void Remove(string key)
             => this.data.Remove(key);

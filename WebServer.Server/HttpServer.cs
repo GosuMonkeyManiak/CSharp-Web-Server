@@ -5,7 +5,6 @@
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
-    using Responses;
 
     public class HttpServer
     {
@@ -78,7 +77,13 @@
         }
 
         private void AddSession(Request request, Response response)
-            => response.Cookies.Add(Session.SessionCookieName, request.Session.Id);
+        {
+            if (request.Session.IsNew)
+            {
+                response.Cookies.Add(Session.SessionCookieName, request.Session.Id);
+                request.Session.IsNew = false;
+            }
+        }
 
         private async Task<string> ReadRequest(NetworkStream networkStream)
         {
