@@ -16,7 +16,7 @@
             //    : this.User = new();
         }
 
-        protected Request Request { get; init; }
+        protected Request Request { get; private init; }
 
         protected Response Response { get; private init; }
 

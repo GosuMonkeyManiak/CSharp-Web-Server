@@ -20,18 +20,20 @@
             where TController : Controller
             => routingTable.MapPost(path, request => controllerFunction(CreateController<TController>(request)));
 
-        private static TController CreateController<TController>(Request request) 
+        private static TController CreateController<TController>(Request request)
+            where TController : Controller
             => (TController)CreateController(typeof(TController), request);
 
-        private static object CreateController(Type controllerType, Request request)
+        private static Controller CreateController(Type controllerType, Request request)
         {
             var controller = Activator.CreateInstance(controllerType);
 
             controllerType
+                .BaseType
                 .GetProperty("Request", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(controller, request);
 
-            return controller;
+            return (Controller) controller;
         }
 
         public static IRoutingTable MapControllers(this IRoutingTable routingTable)
@@ -106,7 +108,7 @@
 
                 var controller = CreateController(controllerType, request);
 
-                return (Response)action.Invoke(controller, Array.Empty<object>());
+                return (Response) action.Invoke(controller, Array.Empty<object>());
             };
 
         private static void MapDefaultRoutes(
