@@ -8,11 +8,6 @@
 
     public class HomeController : Controller
     {
-        public HomeController(Request request) 
-            : base(request)
-        {
-        }
-        
         public Response Index() 
             => View();
 
@@ -37,8 +32,10 @@
             return View(model);
         }
 
-        public Response Content() => View();
+        public Response Content() 
+            => View();
 
+        [HttpPost]
         public Response DownloadContent() 
             => File("test.pdf", Header.InlineFile);
 
@@ -69,7 +66,7 @@
             this.Response.Cookies.Add("My-Cookie", "My-Cookie");
             this.Response.Cookies.Add("My-Second-Cookie", "My-Second-Value");
 
-            return Html("<h1>Cookies set!</h1>");
+            return View();
         }
 
         public Response Session()

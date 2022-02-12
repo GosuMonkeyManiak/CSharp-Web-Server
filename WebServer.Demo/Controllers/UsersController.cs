@@ -9,11 +9,6 @@
         private const string Username = "user";
         private const string Password = "user123";
 
-        public UsersController(Request request) 
-            : base(request)
-        {
-        }
-
         public Response Index()
             => View();
 
@@ -27,6 +22,7 @@
             return View();
         }
 
+        [HttpPost]
         public Response LogInUser()
         {
             var userName = this.Request.Form["Username"];
@@ -46,32 +42,31 @@
             return Redirect($"/{nameof(Login)}");
         }
 
+        [Authorize]
         public Response Logout()
-        {
-            if (!this.Request.Session.ContainsKey(Session.SessionUserKey))
-            {
-                return Redirect($"/{nameof(Login)}");
-            }
-
+        { 
             this.Request.Session.Remove(Session.SessionUserKey);
 
             return View();
         }
 
+        [Authorize]
         public Response GetUserData()
         {
-            if (this.Request.Session.ContainsKey(Session.SessionUserKey))
+            var userProfileViewModel = new UserProfileViewModel()
             {
-                var userProfileViewModel = new UserProfileViewModel()
-                {
-                    UserName = Username,
-                    DateTime = this.Request.Session[Session.SessionCurrentDateKey]
-                };
+                UserName = Username,
+                DateTime = this.Request.Session[Session.SessionCurrentDateKey]
+            };
 
-                return View(userProfileViewModel);
-            }
-
-            return Redirect($"/{nameof(Login)}");
+            return View(userProfileViewModel);
         }
+
+        [Authorize]
+        public Response AuthorizeCheck()
+        {
+            return View();
+        }
+
     }
 }

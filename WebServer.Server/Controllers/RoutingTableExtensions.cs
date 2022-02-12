@@ -2,7 +2,6 @@
 {
     using System.Reflection;
     using HTTP;
-    using Results;
     using Routing;
 
     public static class RoutingTableExtensions
@@ -21,11 +20,19 @@
             where TController : Controller
             => routingTable.MapPost(path, request => controllerFunction(CreateController<TController>(request)));
 
-        private static TController CreateController<TController>(Request request)
+        private static TController CreateController<TController>(Request request) 
             => (TController)CreateController(typeof(TController), request);
 
-        private static object CreateController(Type type, Request request)
-            => Activator.CreateInstance(type, new object[] { request });
+        private static object CreateController(Type controllerType, Request request)
+        {
+            var controller = Activator.CreateInstance(controllerType);
+
+            controllerType
+                .GetProperty("Request", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(controller, request);
+
+            return controller;
+        }
 
         public static IRoutingTable MapControllers(this IRoutingTable routingTable)
         {

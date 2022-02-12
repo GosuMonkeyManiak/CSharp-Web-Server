@@ -24,8 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Views\Home\Cookies.cshtml" />
     <None Remove="Views\Home\HtmlFormPost.cshtml" />
     <None Remove="Views\Home\Index.cshtml" />
+    <None Remove="Views\Users\AuthorizeCheck.cshtml" />
     <None Remove="Views\Users\GetUserData.cshtml" />
     <None Remove="Views\Users\Index.cshtml" />
     <None Remove="Views\Users\LogInUser.cshtml" />

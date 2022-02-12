@@ -7,17 +7,16 @@
 
     public abstract class Controller
     {
-        protected Controller(Request request)
+        protected Controller()
         {
-            this.Request = request;
             this.Response = new Response(StatusCode.OK);
 
-            this.User = this.Request.Session.ContainsKey(Session.SessionUserKey)
-                ? this.User = new() { Id = this.Request.Session[Session.SessionUserKey] }
-                : this.User = new();
+            //this.User = this.Request.Session.ContainsKey(Session.SessionUserKey)
+            //    ? this.User = new() { Id = this.Request.Session[Session.SessionUserKey] }
+            //    : this.User = new();
         }
 
-        protected Request Request { get; private init; }
+        protected Request Request { get; init; }
 
         protected Response Response { get; private init; }
 
