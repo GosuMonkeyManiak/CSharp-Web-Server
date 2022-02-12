@@ -1,7 +1,8 @@
-﻿namespace WebServer.Server.HTTP
+﻿namespace WebServer.Server.Results
 {
-    using Collections;
     using Common;
+    using HTTP;
+    using HTTP.Collections;
 
     public abstract class ActionResult : Response
     {

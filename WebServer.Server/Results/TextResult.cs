@@ -1,4 +1,4 @@
-﻿namespace WebServer.Server.Responses
+﻿namespace WebServer.Server.Results
 {
     using HTTP;
 

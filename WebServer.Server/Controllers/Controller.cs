@@ -1,7 +1,7 @@
 ﻿namespace WebServer.Server.Controllers
 {
     using HTTP;
-    using Responses;
+    using Results;
     using System.Runtime.CompilerServices;
     using Identity;
 

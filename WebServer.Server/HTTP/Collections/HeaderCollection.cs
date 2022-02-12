@@ -7,7 +7,7 @@
         private readonly Dictionary<string, Header> headers;
 
         public HeaderCollection() 
-            => this.headers = new Dictionary<string, Header>();
+            => this.headers = new();
 
         public string this[string name]
             => this.headers[name].Value;

@@ -8,7 +8,7 @@
         private readonly Dictionary<string, string> query;
 
         public QueryCollection()
-            => this.query = new Dictionary<string, string>();
+            => this.query = new(StringComparer.InvariantCultureIgnoreCase);
 
         public string this[string key]
             => this.query[key];

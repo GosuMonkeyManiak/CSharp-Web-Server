@@ -8,7 +8,7 @@
         private readonly Dictionary<string, string> form;
 
         public FormCollection()
-            => this.form = new Dictionary<string, string>();
+            => this.form = new(StringComparer.InvariantCultureIgnoreCase);
 
         public string this[string key]
             => this.form[key];
