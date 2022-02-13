@@ -5,9 +5,15 @@
     using Server.HTTP;
     using System.Text;
     using System.Web;
+    using Data;
 
     public class HomeController : Controller
     {
+        private readonly IData data;
+
+        public HomeController(IData data)
+            => this.data = data;
+
         public Response Index() 
             => View();
 

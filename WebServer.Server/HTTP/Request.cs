@@ -4,6 +4,7 @@
     using System.Web;
     using Collections;
     using Collections.Contracts;
+    using Services;
 
     public class Request
     {
@@ -25,7 +26,9 @@
 
         public FormCollection Form { get; init; }
 
-        public static Request Parse(string request)
+        public ServiceCollection Services { get; init; }
+
+        public static Request Parse(string request, ServiceCollection serviceCollection)
         {
             string separator = "\r\n";
 
@@ -58,7 +61,8 @@
                 Cookies = cookies,
                 Body = body,
                 Session = session,
-                Form = form
+                Form = form,
+                Services = serviceCollection
             };
         }
         private static Method ParseMethod(string method)

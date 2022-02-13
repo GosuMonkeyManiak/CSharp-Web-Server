@@ -2,6 +2,7 @@
 {
     using System.Reflection;
     using HTTP;
+    using Results;
     using Routing;
 
     public static class RoutingTableExtensions
@@ -28,7 +29,7 @@
 
         private static Controller CreateController(Type controllerType, Request request)
         {
-            var controller = Activator.CreateInstance(controllerType);
+            var controller = request.Services.CreateInstance(controllerType);
 
             controllerType
                 .BaseType
@@ -99,11 +100,7 @@
         private static Func<Request, Response> GetResponseFunction(MethodInfo action, Type controllerType)
             => request =>
             {
-                var actionAuthorizeAttribute = action
-                    .GetCustomAttribute<AuthorizeAttribute>();
-
-                if (actionAuthorizeAttribute != null &&
-                    !request.Session.ContainsKey(Session.SessionUserKey))
+                if (!IsUserAuthorized(action, request))
                 {
                     return new Response(StatusCode.Unauthorized);
                 }
@@ -114,6 +111,20 @@
 
                 return (Response) action.Invoke(controller, parameters);
             };
+
+        private static bool IsUserAuthorized(MethodInfo action, Request request)
+        {
+            var actionAuthorizeAttribute = action
+                .GetCustomAttribute<AuthorizeAttribute>();
+
+            if (actionAuthorizeAttribute != null &&
+                !request.Session.ContainsKey(Session.SessionUserKey))
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         private static void MapDefaultRoutes(
             IRoutingTable routingTable,

@@ -7,20 +7,30 @@
 
     public abstract class Controller
     {
-        protected Controller()
-        {
-            this.Response = new Response(StatusCode.OK);
+        private UserIdentity user;
 
-            //this.User = this.Request.Session.ContainsKey(Session.SessionUserKey)
-            //    ? this.User = new() { Id = this.Request.Session[Session.SessionUserKey] }
-            //    : this.User = new();
-        }
+        protected Controller() 
+            => this.Response = new Response(StatusCode.OK);
 
         protected Request Request { get; private init; }
 
         protected Response Response { get; private init; }
 
-        protected UserIdentity User { get; private set; }
+        protected UserIdentity User
+        {
+            get
+            {
+                if (this.user == null)
+                {
+                    this.user = this.Request.Session.ContainsKey(Session.SessionUserKey)
+                        ? this.user = new() { Id = this.Request.Session[Session.SessionUserKey] }
+                        : this.user = new();
+                }
+
+                return this.user;
+            }
+            private set => this.user = value;
+        }
 
         protected void SignIn(string userId)
         {
