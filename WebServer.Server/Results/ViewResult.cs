@@ -2,69 +2,63 @@
 {
     using System.Text;
     using HTTP;
+    using Identity;
+    using ViewEngine;
 
     public class ViewResult : ContentResult
     {
         private const char PathSeparator = '/';
+        private const string RenderBody = "@RenderBody";
+        private const string ReplaceHelper = "___View___Is___Here___";
+
+        private readonly IViewEngine viewEngine;
+        private readonly IUserIdentity user;
 
         public ViewResult(
-            Response response, 
-            string viewName, 
-            string controllerName, 
-            object model = null)
-            : base(response, string.Empty, ContentType.Html) 
-            => this.Body = GetHtml(viewName, controllerName, model);
+            Response response,
+            IViewEngine viewEngine,
+            IUserIdentity user,
+            string viewName,
+            string controllerName,
+            object viewModel = null)
+            : base(response, string.Empty, ContentType.Html)
+        {
+            this.viewEngine = viewEngine;
+            this.user = user;
+
+            this.Body = GetHtml(viewName, controllerName, viewModel);
+        }
 
         private byte[] GetHtml(
             string viewName, 
-            string controllerName, 
-            object model = null)
+            string controllerName,
+            object viewModel = null)
         {
             if (!viewName.Contains(PathSeparator))
             {
                 viewName = controllerName + PathSeparator + viewName;
             }
 
+            var layoutPath = Path.GetFullPath("./Views/_Layout.cshtml");
+
             var viewPath = Path.GetFullPath(
                 $"./Views/" +
                 viewName.TrimStart(PathSeparator)
                 + ".cshtml");
 
-            var viewContent = File.ReadAllText(viewPath);
+            var layoutTemplate = File.ReadAllText(layoutPath)
+                .Replace(RenderBody, ReplaceHelper);
 
-            if (model != null)
-            {
-                viewContent = this.PopulateModel(viewContent, model);
-            }
-            
-            var layoutPath = Path.GetFullPath("./Views/_Layout.cshtml");
+            var viewTemplate = File.ReadAllText(viewPath);
 
-            var layoutContent = File.ReadAllText(layoutPath);
+            var layoutContent = this.viewEngine.RenderHtml(layoutTemplate, viewModel, this.user);
 
-            layoutContent = layoutContent.Replace("@RenderBody", viewContent);
+            var viewContent = this.viewEngine.RenderHtml(viewTemplate, viewModel, this.user);
+
+            layoutContent = layoutContent
+                .Replace(ReplaceHelper, viewContent);
 
             return Encoding.UTF8.GetBytes(layoutContent);
-        }
-
-        private string PopulateModel(string viewContent, object model)
-        {
-            var data = model
-                .GetType()
-                .GetProperties()
-                .Select(pr => new
-                {
-                    pr.Name,
-                    Value = pr.GetValue(model)
-                });
-
-            foreach (var entry in data)
-            {
-                viewContent = viewContent.Replace(
-                    $"@Model.{entry.Name}",
-                    entry.Value.ToString());
-            }
-
-            return viewContent;
         }
     }
 }

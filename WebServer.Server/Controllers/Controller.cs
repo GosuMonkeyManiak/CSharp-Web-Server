@@ -4,10 +4,12 @@
     using Results;
     using System.Runtime.CompilerServices;
     using Identity;
+    using Results.ViewEngine;
 
     public abstract class Controller
     {
         private UserIdentity user;
+        private IViewEngine viewEngine;
 
         protected Controller() 
             => this.Response = new Response(StatusCode.OK);
@@ -30,6 +32,19 @@
                 return this.user;
             }
             private set => this.user = value;
+        }
+
+        public IViewEngine ViewEngine
+        {
+            get
+            {
+                if (this.viewEngine == null)
+                {
+                    this.viewEngine = this.Request.Services.GetService<IViewEngine>();
+                }
+
+                return this.viewEngine;
+            }
         }
 
         protected void SignIn(string userId)
@@ -69,9 +84,20 @@
             => new TextFileResult(this.Response, fileName, disposition);
 
         protected Response View([CallerMemberName] string viewName = "")
-            => new ViewResult(this.Response, viewName, this.GetType().GetControllerName());
+            => new ViewResult(
+                this.Response, 
+                this.ViewEngine, 
+                this.User, 
+                viewName, 
+                this.GetType().GetControllerName());
 
         protected Response View(object model, [CallerMemberName] string viewName = "")
-            => new ViewResult(this.Response, viewName, this.GetType().GetControllerName(), model);
+            => new ViewResult(
+                this.Response, 
+                this.ViewEngine, 
+                this.User, 
+                viewName, 
+                this.GetType().GetControllerName(), 
+                model);
     }
 }

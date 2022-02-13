@@ -10,7 +10,14 @@
     <title>My Epic Site</title>
 </head>
 <body>
-    <div>Nav Bar</div>
+
+    @if (User.IsAuthenticated)
+    {
+        <div>Nav bar is authenticated</div>
+    }else
+    {
+        <div>Nav bar is not authenticated</div>
+    }
 
     <div>
         @RenderBody

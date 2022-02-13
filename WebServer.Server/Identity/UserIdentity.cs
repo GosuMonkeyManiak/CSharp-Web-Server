@@ -1,6 +1,6 @@
 ﻿namespace WebServer.Server.Identity
 {
-    public class UserIdentity
+    public class UserIdentity : IUserIdentity
     {
         public string Id { get; init;}
 
