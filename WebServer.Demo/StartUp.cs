@@ -3,6 +3,7 @@
     using Data;
     using Server;
     using Server.Controllers;
+    using Server.Controllers.Contracts;
     using Server.Results.ViewEngine;
 
     public class StartUp
@@ -13,8 +14,9 @@
                     .MapStaticFiles()
                     .MapControllers())
                 .WithServices(services => services
-                    .Add<IData, DbContextData>()
-                    .Add<IViewEngine, ViewEngine>())
+                    .Add<IViewEngine, ViewEngine>()
+                    .Add<IModelState, ModelState>()
+                    .Add<IData, DbContextData>())
                 .Start();
     }
 }

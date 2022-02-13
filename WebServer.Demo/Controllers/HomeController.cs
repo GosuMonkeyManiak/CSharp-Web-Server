@@ -24,8 +24,15 @@
             => View();
 
         [HttpPost]
-        public Response Html(FormViewModel formModel) 
-            => View(formModel, "HtmlFormPost");
+        public Response Html(FormViewModel formModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(ModelState.Errors, "Shared/Error");
+            }
+
+            return View(formModel, "HtmlFormPost");
+        }
 
         public Response Content() 
             => View();

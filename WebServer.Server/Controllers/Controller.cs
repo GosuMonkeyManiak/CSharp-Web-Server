@@ -3,6 +3,7 @@
     using HTTP;
     using Results;
     using System.Runtime.CompilerServices;
+    using Contracts;
     using Identity;
     using Results.ViewEngine;
 
@@ -34,7 +35,7 @@
             private set => this.user = value;
         }
 
-        public IViewEngine ViewEngine
+        protected IViewEngine ViewEngine
         {
             get
             {
@@ -46,6 +47,8 @@
                 return this.viewEngine;
             }
         }
+
+        protected IModelState ModelState { get; private init; }
 
         protected void SignIn(string userId)
         {

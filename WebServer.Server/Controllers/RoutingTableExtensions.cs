@@ -1,8 +1,8 @@
 ﻿namespace WebServer.Server.Controllers
 {
     using System.Reflection;
+    using Contracts;
     using HTTP;
-    using Results;
     using Routing;
 
     public static class RoutingTableExtensions
@@ -27,7 +27,10 @@
             where TController : Controller
             => (TController)CreateController(typeof(TController), request);
 
-        private static Controller CreateController(Type controllerType, Request request)
+        private static Controller CreateController(
+            Type controllerType, 
+            Request request, 
+            object[] actionParameters = null)
         {
             var controller = request.Services.CreateInstance(controllerType);
 
@@ -36,7 +39,29 @@
                 .GetProperty("Request", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(controller, request);
 
+            SetModelState(request, controller, controllerType, actionParameters);
+
             return (Controller) controller;
+        }
+
+        private static void SetModelState(
+            Request request, 
+            object controllerObject, 
+            Type controllerType, 
+            object[] actionParameters = null)
+        {
+            var modelState = request.Services.GetService<IModelState>();
+
+            var modelStateType = modelState.GetType();
+
+            modelStateType
+                .GetProperty("ActionParameters", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(modelState, actionParameters);
+
+            controllerType
+                .BaseType
+                .GetProperty("ModelState", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(controllerObject, modelState);
         }
 
         public static IRoutingTable MapControllers(this IRoutingTable routingTable)
@@ -105,9 +130,9 @@
                     return new Response(StatusCode.Unauthorized);
                 }
 
-                var controller = CreateController(controllerType, request);
-
                 var parameters = GetParametersValues(action, request);
+
+                var controller = CreateController(controllerType, request, parameters);
 
                 return (Response) action.Invoke(controller, parameters);
             };
