@@ -5,6 +5,9 @@
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
+    using Controllers;
+    using Controllers.Contracts;
+    using Results.ViewEngine;
     using Services;
 
     public class HttpServer
@@ -26,6 +29,9 @@
             this.routingTable = (RoutingTable) routingTable;
 
             this.servicesCollection = new ServiceCollection();
+
+            this.servicesCollection.Add<IModelState, ModelState>();
+            this.servicesCollection.Add<IViewEngine, ViewEngine>();
         }
 
         private HttpServer(int port, IRoutingTable routingTable)

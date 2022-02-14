@@ -39,7 +39,7 @@
 
         [HttpPost]
         public Response DownloadContent() 
-            => File("test.pdf", Header.InlineFile);
+            => File("TestPdf.pdf", Header.InlineFile);
 
         public Response Cookies()
         {
@@ -89,7 +89,7 @@
         public Response Error() => throw new InvalidOperationException("Invalid");
 
         public Response PowerPoint()
-            => File("testPowerPoint.pptx");
+            => File("testPowerPoint.pptx", Header.InlineFile);
 
         public Response Word()
             => File("TestWord.docx");

@@ -21,7 +21,7 @@
                 .Where(p => p.GetType().IsClass)
                 .ToList();
 
-            foreach (var realParameter in realParameters) //class -> get properties
+            foreach (var realParameter in realParameters)
             {
                 var properties = realParameter
                     .GetType()
