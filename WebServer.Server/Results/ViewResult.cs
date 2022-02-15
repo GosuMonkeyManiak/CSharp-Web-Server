@@ -5,7 +5,7 @@
     using Identity;
     using ViewEngine;
 
-    public class ViewResult : ContentResult
+    public class ViewResult : ActionResult
     {
         private const char PathSeparator = '/';
         private const string RenderBody = "@RenderBody";
@@ -21,12 +21,14 @@
             string viewName,
             string controllerName,
             object viewModel = null)
-            : base(response, string.Empty, ContentType.Html)
+            : base(response)
         {
             this.viewEngine = viewEngine;
             this.user = user;
 
-            this.Body = GetHtml(viewName, controllerName, viewModel);
+            byte[] content = GetHtml(viewName, controllerName, viewModel);
+
+            this.SetContent(content, ContentType.Html);
         }
 
         private byte[] GetHtml(

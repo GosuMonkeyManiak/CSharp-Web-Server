@@ -43,7 +43,7 @@
             var contentLength = content.Length;
 
             this.Headers.Add(Header.ContentType, contentType);
-            this.Headers.Add(Header.ContentLength, contentType);
+            this.Headers.Add(Header.ContentLength, contentLength.ToString());
 
             this.Body = content;
 
